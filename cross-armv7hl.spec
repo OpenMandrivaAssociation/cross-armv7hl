@@ -775,6 +775,7 @@ popd
 pushd %{cross_gzip}
     %cross_configure						\
 	%{build_config}						\
+	--bindir=/bin
 	%{host_config}
     %make
     %make install DESTDIR=%{build_root}%{sysroot}
