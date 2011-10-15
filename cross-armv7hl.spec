@@ -921,6 +921,7 @@ ln -sf %{_bindir}/%{target}-g++ %{buildroot}%{prefix}/bin/c++
 ln -sf %{_bindir}/%{target}-g++ %{buildroot}%{prefix}/bin/g++
 ln -sf %{_bindir}/%{target}-gcc %{buildroot}%{prefix}/bin/gcc
 ln -sf %{_bindir}/%{target}-gcc %{buildroot}%{prefix}/bin/cc
+ln -sf %{_bindir}/%{target}-cpp %{buildroot}%{cross_libdir}/cpp
 
 mkdir -p %{buildroot}%{prefix}/share/gdb/auto-load%{cross_libdir}
 mv -f %{buildroot}%{sysroot}%{cross_libdir}/libstdc++.so.*.py		\
