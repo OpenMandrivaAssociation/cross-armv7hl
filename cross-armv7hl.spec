@@ -20,44 +20,44 @@
 %define		cross_configure		./configure --prefix=%{_prefix} --exec-prefix=%{_prefix} --bindir=%{_bindir} --sbindir=%{_sbindir} --sysconfdir=%{_sysconfdir} --datadir=%{_datadir} --includedir=%{_includedir} --libdir=%{cross_libdir} --libexecdir=%{cross_libdir} --localstatedir=%{_localstatedir} --sharedstatedir=%{_sharedstatedir} --mandir=%{_mandir} --infodir=%{_infodir}
 %define		__cross_configure	../%{cross_configure}
 %define		build_config		--build=%{_target_platform} --disable-werror --with-build-sysroot=%{build_root}%{sysroot}
-%define		target_config		--with-cpu=cortex-a8 --with-tune=cortex-a8 --with-arch=armv7-a --with-mode=thumb --with-float=hard --with-fpu=vfpv3-d16 --with-abi=aapcs-linux --with-sysroot=%{sysroot} --target=%{target}
-%define		host_config		--with-cpu=cortex-a8 --with-tune=cortex-a8 --with-arch=armv7-a --with-mode=thumb --with-float=hard --with-fpu=vfpv3-d16 --with-abi=aapcs-linux --host=%{target} --target=%{target}
+%define		target_config		--with-cpu=cortex-a8 --with-tune=cortex-a8 --with-arch=armv7-a --with-mode=thumb --with-float=hard --with-fpu=neon --with-abi=aapcs-linux --with-sysroot=%{sysroot} --target=%{target}
+%define		host_config		--with-cpu=cortex-a8 --with-tune=cortex-a8 --with-arch=armv7-a --with-mode=thumb --with-float=hard --with-fpu=neon --with-abi=aapcs-linux --host=%{target} --target=%{target}
 
-%define		gcc_version		4.6.1
-%define		cross_linux		linux-2.6.38
+%define		gcc_version		4.7.2
+%define		cross_linux		linux-3.5.3
 %define		cross_binutils		binutils-2.22.51
-%define		cross_gcc		gcc-4.6-20111007
+%define		cross_gcc		gcc-linaro-4.7-2012.08
 %define		cross_glibc		glibc-2.14-121-g5551a7b
-%define		cross_gdb		gdb-7.1
-%define		cross_gmp		gmp-5.0.2
-%define		cross_mpfr		mpfr-3.1.0
+%define		cross_gdb		gdb-7.5
+%define		cross_gmp		gmp-5.0.5
+%define		cross_mpfr		mpfr-3.1.1
 %define		cross_mpc		mpc-0.9
-%define		cross_ppl		ppl-0.11
+%define		cross_ppl		ppl-0.12.1
 %define		cross_cloog		cloog-parma-0.16.1
-%define		cross_zlib		zlib-1.2.5
+%define		cross_zlib		zlib-1.2.7
 %define		cross_bash		bash-4.2
 %define		cross_make		make-3.82
 %define		cross_sed		sed-4.2.1
-%define		cross_coreutils		coreutils-8.12
-%define		cross_util_linux	util-linux-2.20
+%define		cross_coreutils		coreutils-8.19
+%define		cross_util_linux	util-linux-2.21.2
 %define		cross_tar		tar-1.26
 %define		cross_gzip		gzip-1.4
 %define		cross_bzip2		bzip2-1.0.6
 %define		cross_diffutils		diffutils-3.2
 %define		cross_findutils		findutils-4.5.10
-%define		cross_gawk		gawk-4.0.0
+%define		cross_gawk		gawk-4.0.1
 %define		cross_patch		patch-2.6.1
 %define		cross_unzip		unzip60
 %define		cross_which		which-2.20
 %define		cross_xz		xz-5.1.1alpha
-%define		cross_grep		grep-2.9
+%define		cross_grep		grep-2.14
 
 %define 	build_root		%{_builddir}/cross-armv7hl/root
 %define		gccdir			%{prefix}/lib/gcc/%{target}/%{gcc_version}
 
 Name:		cross-armv7hl
 Release:	1
-Version:	2011.10
+Version:	2012.08
 License:	GPLv3+
 Group:		Development/Other
 Summary:	ARM GNU/Linux cross toolchain
@@ -150,7 +150,7 @@ Source13:	%{cross_sed}.tar.bz2
 # repsys co sed; cd sed
 # rpmbuild -bp --define "_topdir `pwd`" --define "_target_cpu arm" SPECS/coreutils.spec
 # cd BUILD; tar jcf %{cross_coreutils}.tar.bz2 %{cross_coreutils}; mv %{cross_coreutils}.tar.bz2 ../../cross-armv7hl/SOURCES
-Source14:	%{cross_coreutils}.tar.bz2
+Source14:	%{cross_coreutils}.tar.xz
 
 # revision: 698245
 # repsys co util-linux; cd util-linux
@@ -193,7 +193,7 @@ Source20:	%{cross_findutils}.tar.bz2
 # repsys co gawk; cd gawk
 # rpmbuild -bp --define "_topdir `pwd`" --define "_target_cpu arm" SPECS/gawk.spec
 # cd BUILD; tar jcf %{cross_gawk}.tar.bz2 %{cross_gawk}; mv %{cross_gawk}.tar.bz2 ../../cross-armv7hl/SOURCES
-Source21:	%{cross_gawk}.tar.bz2
+Source21:	%{cross_gawk}.tar.xz
 
 # revision: 666991
 # repsys co patch; cd patch
@@ -224,7 +224,7 @@ Source25:	%{cross_xz}.tar.bz2
 # repsys co grep; cd grep
 # rpmbuild -bp --define "_topdir `pwd`" --define "_target_cpu arm" SPECS/grep.spec
 # cd BUILD; tar jcf %{cross_grep}.tar.bz2 %{cross_grep}; mv %{cross_grep}.tar.bz2 ../../cross-armv7hl/SOURCES
-Source26:	%{cross_grep}.tar.bz2
+Source26:	%{cross_grep}.tar.xz
 
 Source98:	stage2.tar.bz2
 Source99:	README
@@ -445,7 +445,8 @@ Requires:	cross-armv7hl-host = %{EVRD}
 %prep
 %setup -q -c -n cross-armv7hl -T -a 0 -a 1 -a 2 -a 3 -a 4 -a 5 -a 6 -a 7 -a 8 -a 9 -a 10 -a 11 -a 12 -a 13 -a 14 -a 15 -a 16 -a 17 -a 18 -a 19 -a 20 -a 21 -a 22 -a 23 -a 24 -a 25 -a 26
 
-%patch0 -p1
+%patch0 -p2
+
 
 ########################################################################
 %build
@@ -474,7 +475,7 @@ popd
 # gcc host
 mkdir -p %{cross_gcc}/build; pushd %{cross_gcc}/build
     echo %{vendor} > ../gcc/DEV-PHASE
-    sed -i -e 's/4\.6\.2/4.6.1/' ../gcc/BASE-VER
+    sed -i -e 's/4\.7\.2/4.7.2/' ../gcc/BASE-VER
     %__cross_configure						\
 	%{build_config}						\
 	--libdir=%{prefix}/lib					\
@@ -495,7 +496,7 @@ mkdir -p %{cross_glibc}/build; pushd %{cross_glibc}/build
     %__cross_configure						\
 	%{build_config}						\
 	--with-headers=%{build_root}%{sysroot}%{_includedir}	\
-	--enable-kernel=2.6.32					\
+	--enable-kernel=3.5.3					\
 	--enable-bind-now					\
 	--disable-profile					\
 	--cache-file=config.cache				\
@@ -675,7 +676,7 @@ rm -fr %{cross_gcc}; tar jxf %{_sourcedir}/%{cross_gcc}.tar.bz2
 patch -l -p1 < %{PATCH1}
 mkdir -p %{cross_gcc}/build; pushd %{cross_gcc}/build
     echo %{vendor} > ../gcc/DEV-PHASE
-    sed -i -e 's/4\.6\.2/4.6.1/' ../gcc/BASE-VER
+    sed -i -e 's/4\.7\.2/4.7.2/' ../gcc/BASE-VER
     %__cross_configure						\
 	%{build_config}						\
 	--enable-languages=c,c++				\
