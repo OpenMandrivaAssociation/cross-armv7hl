@@ -41,7 +41,7 @@
 %define		cross_coreutils		coreutils-8.19
 %define		cross_util_linux	util-linux-2.21.2
 %define		cross_tar		tar-1.26
-%define		cross_gzip		gzip-1.4
+%define		cross_gzip		gzip-1.5
 %define		cross_bzip2		bzip2-1.0.6
 %define		cross_diffutils		diffutils-3.2
 %define		cross_findutils		findutils-4.5.10
@@ -168,7 +168,7 @@ Source16:	%{cross_tar}.tar.bz2
 # repsys co gzip; cd gzip
 # rpmbuild -bp --define "_topdir `pwd`" --define "_target_cpu arm" SPECS/gzip.spec
 # cd BUILD; tar jcf %{cross_gzip}.tar.bz2 %{cross_gzip}; mv %{cross_gzip}.tar.bz2 ../../cross-armv7hl/SOURCES
-Source17:	%{cross_gzip}.tar.bz2
+Source17:	%{cross_gzip}.tar.xz
 
 # revision: 663345
 # repsys co bzip2; cd bzip2
@@ -255,6 +255,7 @@ Requires:	cross-armv7hl-gdb = %{EVRD}
 Patch0:		cross-arm-gdb.patch
 Patch1:		cross-arm-gcc.patch
 Patch2:		cross-arm-util-linux.patch
+Patch3:		mpc-automake112.aptch
 
 %description
 %{summary}.
@@ -335,6 +336,7 @@ Requires:	cross-armv7hl-binutils = %{EVRD}
 %{sysroot}%{cross_libdir}/libgcc*
 %{sysroot}%{cross_libdir}/libgomp*
 %{sysroot}%{cross_libdir}/libmudf*
+#% {sysroot}%{cross_libdir}/libitm*
 
 ########################################################################
 %package	c++
@@ -436,8 +438,8 @@ Requires:	cross-armv7hl-host = %{EVRD}
 %files		gdb
 %defattr(-,root,root,-)
 %{_bindir}/%{target}-gdb
-%{_bindir}/%{target}-gdbtui
-%{_bindir}/%{target}-gstack
+#%{_bindir}/%{target}-gdbtui
+#%{_bindir}/%{target}-gstack
 %{prefix}/share/gdb
 %{sysroot}%{_bindir}/gdbserver
 
@@ -607,6 +609,7 @@ pushd %{cross_mpfr}
 popd
 
 # mpc
+patch -l -p2 < %{PATCH3}
 pushd %{cross_mpc}
     autoreconf -fi
     %cross_configure						\
@@ -662,7 +665,7 @@ popd
 # target side applications
 
 # target binutils
-rm -fr %{cross_binutils}; tar jxf %{_sourcedir}/%{cross_binutils}.tar.bz2
+rm -fr %{cross_binutils}; tar jxf %{SOURCE1}
 pushd %{cross_binutils}
     %cross_configure						\
 	%{build_config}						\
@@ -672,7 +675,7 @@ pushd %{cross_binutils}
 popd
 
 # target gcc
-rm -fr %{cross_gcc}; tar jxf %{_sourcedir}/%{cross_gcc}.tar.bz2
+rm -fr %{cross_gcc}; tar jxf %{SOURCE2}
 patch -l -p1 < %{PATCH1}
 mkdir -p %{cross_gcc}/build; pushd %{cross_gcc}/build
     echo %{vendor} > ../gcc/DEV-PHASE
@@ -774,7 +777,7 @@ popd
 pushd %{cross_gzip}
     %cross_configure						\
 	%{build_config}						\
-	--bindir=/bin
+	--bindir=/bin						\
 	%{host_config}
     %make
     %make install DESTDIR=%{build_root}%{sysroot}
@@ -905,6 +908,8 @@ cp -fpar %{build_root}/* %{buildroot}
 # binutils
 rm -f %{buildroot}%{_libdir}/libiberty.a
 rm -f %{buildroot}%{prefix}/lib*/libiberty.a
+
+rm -f %{buildroot}%{prefix}/lib*/libitm*
 
 rm -fr %{buildroot}%{_datadir}
 rm -fr %{buildroot}%{_includedir}
