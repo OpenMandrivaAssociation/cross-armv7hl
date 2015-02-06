@@ -56,7 +56,7 @@
 %define		gccdir			%{prefix}/lib/gcc/%{target}/%{gcc_version}
 
 Name:		cross-armv7hl
-Release:	1
+Release:	2
 Version:	2012.08
 License:	GPLv3+
 Group:		Development/Other
